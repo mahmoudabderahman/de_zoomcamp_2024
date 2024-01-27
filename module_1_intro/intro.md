@@ -81,6 +81,7 @@ docker run -it \
   -e POSTGRES_DB="ny_taxi" \
   -v $(pwd):/var/lib/postgresql/data \
   -p 5432:5432 \
+  postgres
 ```
 If there is an error because the port 5432 is not free, we can check this out by running:
 ```shell
@@ -127,3 +128,47 @@ https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow
 ``` \dt ``` ---> list of tables
 ``` \d 'table_name' ``` ---> describe the table
 
+## pgadmin container
+To pull the docker image:
+```shell
+docker pull dpage/pgadmin4
+```
+
+To run the pgAdmin container:
+```shell
+docker run -it \
+  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+  -e PGADMIN_DEFAULT_PASSWORD="root" \
+  -p 8080:80 \
+  dpage/pgadmin4
+```
+
+In order to be able to link the postgres container with the pgAdmin container, we have to create a network in docker:
+```shell
+docker network create  pg-network
+```
+
+Run the postgres container again with the network parameter added:
+
+```shell
+docker run -it \
+  -e POSTGRES_USER="root" \
+  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_DB="ny_taxi" \
+  -v /Users/mahmoudabdelrahman/Desktop/de_zoomcamp_2024/module_1_intro/ny_taxi_postgres_data:/var/lib/postgresql/data \
+  -p 5432:5432 \
+  --network=pg-network \
+  --name pg-database \
+postgres
+```
+
+Run the pgadmin container again with the network parameter added:
+```shell
+docker run -it \
+  -e PGADMIN_DEFAULT_EMAIL="admin@admin.com" \
+  -e PGADMIN_DEFAULT_PASSWORD="root" \
+  -p 8080:80 \
+  --network=pg-network \
+  --name pg-admin \
+dpage/pgadmin4
+```
