@@ -172,3 +172,17 @@ docker run -it \
   --name pg-admin \
 dpage/pgadmin4
 ```
+
+### nbconvert problem
+```shell
+ln -s /opt/homebrew/share/jupyter/nbconvert ~/Library/Jupyter
+```
+
+python3 ingest_data.py \
+    --user=root \
+    --password=root \
+    --host=localhost \
+    --port=5432 \
+    --db=ny_taxi \
+    --table_name=yellow_taxi_trips \
+    --url=https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
