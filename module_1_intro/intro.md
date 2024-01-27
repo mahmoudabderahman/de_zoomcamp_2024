@@ -65,3 +65,65 @@ To pass an argument while running a docker container:
 docker run -it test:pandas 2021-01-15
 ```
 
+## Postgres Container
+- docker run: This command is used to run a Docker container.
+- -it: These options are used to allocate a pseudo-TTY and keep the container running in interactive mode, allowing you to interact with the container's shell.
+- -e POSTGRES_USER="root": This option sets the environment variable POSTGRES_USER to "root". It specifies the username for the PostgreSQL database.
+- -e POSTGRES_PASSWORD="root": This option sets the environment variable POSTGRES_PASSWORD to "root". It specifies the password for the PostgreSQL database.
+- -e POSTGRES_DB="ny_taxi": This option sets the environment variable POSTGRES_DB to "ny_taxi". It specifies the name of the PostgreSQL database.
+- -v `$(pwd)`:/var/lib/postgresql/data: This option mounts the current directory ($(pwd)) to the /var/lib/postgresql/data directory inside the container. It allows the container to persist data in the current directory.
+- -p 5432:5432: This option maps the host port 5432 to the container port 5432. It enables communication with the PostgreSQL server running inside the container.
+
+```shell
+docker run -it \
+  -e POSTGRES_USER="root" \
+  -e POSTGRES_PASSWORD="root" \
+  -e POSTGRES_DB="ny_taxi" \
+  -v $(pwd):/var/lib/postgresql/data \
+  -p 5432:5432 \
+```
+If there is an error because the port 5432 is not free, we can check this out by running:
+```shell
+sudo lsof -i -P -n | grep LISTEN
+```
+
+And check if there is something running on that port:
+```
+postgres    366           postgres    8u  IPv6 0x146b34934d8ceed      0t0    TCP *:5432 (LISTEN)
+postgres    366           postgres    9u  IPv4 0x146b3493424437d      0t0    TCP *:5432 (LISTEN)
+````
+
+Then we can run:
+```shell
+kill 366
+```
+
+### pgcli
+A CLI client to connect to postgres server. 
+
+```shell
+$ pgcli -h localhost -p 5432 -u root -d ny_taxi
+```
+
+On mac with silicon chip, it was necessary to:  
+1. ```pip install psycopg2-binary ```
+2. ```brew install libpq```
+3. ```echo 'export PATH="/opt/homebrew/opt/libpq/bin:$PATH"' >> ~/.zshrc```
+
+
+Data can be quickly explored on linux using the command:
+```shell
+head -n 100 yellow_tripdata_2021-01.csv
+```
+
+To save only the first 100 into a new csv file:
+```shell
+head -n 100 yellow_tripdata_2021-01.csv > yellow_head.csv
+```
+
+Dictionary for the dataset:
+https://www.nyc.gov/assets/tlc/downloads/pdf/data_dictionary_trip_records_yellow.pdf
+#### postgres commands
+``` \dt ``` ---> list of tables
+``` \d 'table_name' ``` ---> describe the table
+
