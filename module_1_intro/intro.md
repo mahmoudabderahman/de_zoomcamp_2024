@@ -178,6 +178,10 @@ dpage/pgadmin4
 ln -s /opt/homebrew/share/jupyter/nbconvert ~/Library/Jupyter
 ```
 
+## Containerizing the ingesting script 
+URL="https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz"
+
+```shell
 python3 ingest_data.py \
     --user=root \
     --password=root \
@@ -186,3 +190,42 @@ python3 ingest_data.py \
     --db=ny_taxi \
     --table_name=yellow_taxi_trips \
     --url=https://github.com/DataTalksClub/nyc-tlc-data/releases/download/yellow/yellow_tripdata_2021-01.csv.gz
+```
+
+Dockerfile contents:
+```dockefile
+# Use the python:3.9 docker image as a base image
+FROM python:3.9
+
+# Run this command after the establishment
+RUN apt-get update && apt-get install -y \
+    wget
+RUN pip install pandas sqlalchemy psycopg2 requests
+
+# Specifiy the working directory
+WORKDIR /app
+
+# Copy src destination
+COPY ingest_data.py ingest_data.py
+
+# Use bash as the entrypoint
+# ENTRYPOINT ["bash"]
+ENTRYPOINT ["python", "ingest_data.py"]
+```
+
+Building the docker image with the dockerfile:
+```shell
+docker build -t taxi_ingest:v001 .
+```
+
+Running the docker container:
+```shell
+docker run -it --network=pg-network taxi_ingest:v001 \
+    --user=root \
+    --password=root \
+    --host=pg-database \
+    --port=5432 \
+    --db=ny_taxi \
+    --table_name=yellow_taxi_trips \
+    --url=$URL
+```

@@ -2,14 +2,16 @@
 FROM python:3.9
 
 # Run this command after the establishment
-RUN pip install pandas 
+RUN apt-get update && apt-get install -y \
+    wget
+RUN pip install pandas sqlalchemy psycopg2 requests
 
 # Specifiy the working directory
 WORKDIR /app
 
 # Copy src destination
-COPY pipeline.py pipeline.py
+COPY ingest_data.py ingest_data.py
 
 # Use bash as the entrypoint
 # ENTRYPOINT ["bash"]
-ENTRYPOINT ["python", "pipeline.py"]
+ENTRYPOINT ["python", "ingest_data.py"]
