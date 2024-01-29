@@ -1,3 +1,12 @@
+- [Docker](#docker)
+  - [Dockerfile](#dockerfile)
+  - [Postgres Container](#postgres-container)
+    - [pgcli](#pgcli)
+      - [postgres commands](#postgres-commands)
+  - [pgadmin container](#pgadmin-container)
+    - [nbconvert problem](#nbconvert-problem)
+  - [Containerizing the ingesting script](#containerizing-the-ingesting-script)
+
 # Docker
 To run the application, use the following command in your terminal:
 
