@@ -5,3 +5,4 @@ module_1_intro/data
 module_1_intro/output.csv
 module_1_intro/output.csv.gz
 .vscode
+module_1_intro/pg_admin_data
